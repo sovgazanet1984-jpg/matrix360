@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATRIX 360</title>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+background:#080e20;
+color:#fff;
+font-family:Arial,sans-serif;
+}
+header{
+padding:25px;
+text-align:center;
+border-bottom:1px solid #293d60;
+}
+.logo{
+font-size:30px;
+font-weight:900;
+letter-spacing:3px;
+}
+.logo span{color:#36d9ce}
+main{
+max-width:850px;
+margin:auto;
+padding:25px 16px;
+}
+.hero{text-align:center;padding:30px 5px}
+.hero h1{font-size:34px}
+.hero h1 span{color:#36d9ce}
+.panel{
+background:#111d37;
+border:1px solid #293d60;
+border-radius:16px;
+padding:22px;
+margin:20px 0;
+}
+input{
+width:100%;
+padding:14px;
+margin:8px 0 18px;
+background:#09142a;
+border:1px solid #354b70;
+border-radius:8px;
+color:white;
+font-size:16px;
+}
+label{display:block;color:#b6c5df}
+button{
+padding:14px 18px;
+border:0;
+border-radius:9px;
+font-weight:bold;
+cursor:pointer;
+}
+.primary{background:#16bdb5;color:white}
+.secondary{background:#293b5c;color:white}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">MATRIX <span>360</span></div>
+<p>BUSINESS PARTNERSHIP INTELLIGENCE</p>
+</header>
+
+<main>
+<section class="hero">
+<h1>Оценка <span>совместимости</span></h1>
+<p>Два партнёра. Одна общая цель.</p>
+</section>
+
+<section class="panel" id="setup">
+<h2>Участники проекта</h2>
+<label>Первый партнёр</label>
+<input id="name1" placeholder="Имя первого партнёра">
+<label>Второй партнёр</label>
+<input id="name2" placeholder="Имя второго партнёра">
+<button class="primary" onclick="start()">Начать тестирование</button>
+</section>
+<section class="panel hidden" id="test">
+<h2>Тестирование партнёров</h2>
+<div id="questionArea">
+<h3 id="questionTitle"></h3>
+<p id="questionText"></p>
+
+<div id="answers"></div>
+
+<button class="primary" onclick="nextQuestion()">Следующий вопрос</button>
+</div>
+</section>
+
+<section class="panel hidden" id="result">
+<h2>Результаты MATRIX 360</h2>
+<div id="resultText"></div>
+<button class="secondary" onclick="location.reload()">Начать заново</button>
+</section>
+
+</main>
+
+<script>
+const questions = [
+{
+title:"Блок 1. Цели и стратегия",
+text:"Насколько совпадают ваши долгосрочные бизнес-цели?",
+answers:[
+"Полностью совпадают",
+"В основном совпадают",
+"Есть существенные различия",
+"Цели совершенно разные"
+]
+},
+{
+title:"Блок 1. Цели и стратегия",
+text:"Как вы относитесь к риску при развитии бизнеса?",
+answers:[
+"Готов рисковать ради роста",
+"Предпочитаю умеренный риск",
+"Выбираю осторожную стратегию",
+"Избегаю риска"
+]
+},
+{
+title:"Блок 2. Финансы",
+text:"Как вы предпочитаете распределять прибыль?",
+answers:[
+"Реинвестировать большую часть",
+"Делить между партнёрами и бизнесом",
+"Максимально выводить прибыль",
+"Решать индивидуально"
+]
+},
+{
+title:"Блок 3. Управление",
+text:"Как должны приниматься важные решения?",
+answers:[
+"Совместно",
+"Каждый отвечает за свою область",
+"Один партнёр принимает решения",
+"В зависимости от ситуации"
+]
+},
+{
+title:"Блок 4. Ответственность",
+text:"Что делать, если один партнёр не выполняет обязательства?",
+answers:[
+"Обсудить и найти решение",
+"Перераспределить обязанности",
+"Применить финансовые санкции",
+"Прекратить сотрудничество"
+]
+}
+];
+
+let currentQuestion = 0;
+let answers1 = [];
+let answers2 = [];
+let currentPartner = 1;
+
+function start(){
+const n1 = document.getElementById("name1").value.trim();
+const n2 = document.getElementById("name2").value.trim();
+
+if(!n1 || !n2){
+alert("Введите имена обоих партнёров");
+return;
+}
+
+document.getElementById("setup").classList.add("hidden");
+document.getElementById("test").classList.remove("hidden");
+
+showQuestion();
+}
+
+function showQuestion(){
+const q = questions[currentQuestion];
+
+document.getElementById("questionTitle").textContent =
+q.title + " — вопрос " + (currentQuestion+1);
+
+document.getElementById("questionText").textContent =
+(currentPartner===1 ? "Партнёр 1: " : "Партнёр 2: ") + q.text;
+
+const container = document.getElementById("answers");
+container.innerHTML = "";
+
+q.answers.forEach((answer,index)=>{
+const label = document.createElement("label");
+label.style.display = "block";
+label.style.padding = "12px";
+label.style.margin = "8px 0";
+label.style.background = "#1b2b49";
+label.style.borderRadius = "8px";
+label.style.cursor = "pointer";
+
+const radio = document.createElement("input");
+radio.type = "radio";
+radio.name = "answer";
+radio.value = index;
+radio.style.width = "auto";
+radio.style.margin = "0 10px 0 0";
+
+label.appendChild(radio);
+label.appendChild(document.createTextNode(answer));
+container.appendChild(label);
+});
+}
+  function nextQuestion(){
+
+const selected = document.querySelector('input[name="answer"]:checked');
+
+if(!selected){
+alert("Выберите вариант ответа");
+return;
+}
+
+if(currentPartner===1){
+answers1.push(Number(selected.value));
+currentPartner=2;
+showQuestion();
+return;
+}
+
+answers2.push(Number(selected.value));
+currentPartner=1;
+
+currentQuestion++;
+
+if(currentQuestion<questions.length){
+showQuestion();
+}else{
+showResults();
+}
+}
+
+function showResults(){
+
+document.getElementById("test").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+
+let totalDifference=0;
+
+for(let i=0;i<answers1.length;i++){
+totalDifference+=Math.abs(answers1[i]-answers2[i]);
+}
+
+const maxDifference=questions.length*3;
+const compatibility=Math.round((1-totalDifference/maxDifference)*100);
+
+const name1=document.getElementById("name1").value;
+const name2=document.getElementById("name2").value;
+
+document.getElementById("resultText").innerHTML=`
+<h3>${name1} + ${name2}</h3>
+<h1 style="font-size:55px;color:#36d9ce">${compatibility}%</h1>
+<p>Индекс совместимости партнёров</p>
+<p>Количество вопросов: ${questions.length}</p>
+<p>Результат показывает степень совпадения ваших ответов.</p>
+`;
+}
+
+</script>
+</body>
+</html>
